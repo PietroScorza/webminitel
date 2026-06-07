@@ -422,18 +422,26 @@ function sendSelection(pack, metodo) {
           tg.openInvoice(invoiceUrl, (status) => { /* ... logica de estrellas ... */ });
           return;
         }
-      } else if (metodo === 'cripto') {
-      const botUsername = 'muhootestgirl_bot'; 
-      const deepLink = `https://t.me/${botUsername}?start=crypto_${pack}`;
-      
-      if (tg && tg.openTelegramLink) {
-        // Le decimos a Telegram que abra el enlace y dejamos que él solo gestione el cierre
-        tg.openTelegramLink(deepLink);
-      } else {
-        window.location.href = deepLink;
-      }
-    
-    }
+      }else if (metodo === 'cripto') {
+
+        const botUsername = 'muhootestgirl_bot';
+
+        const deepLink =
+            `https://t.me/${botUsername}?start=crypto_${pack}`;
+
+        if (tg) {
+            tg.close();
+
+            setTimeout(() => {
+            window.location.href = deepLink;
+            }, 300);
+
+        } else {
+            window.location.href = deepLink;
+        }
+
+        return;
+        }
     }
 
     document.querySelectorAll('[data-pack][data-metodo]').forEach((button) => {
