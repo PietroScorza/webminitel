@@ -400,19 +400,46 @@
   <script>
     const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
     const demoNotice = document.getElementById('demoNotice');
+    const STAR_INVOICE_URLS = {
+      inicial: 'https://t.me/$kmdPQ_oqMFGXBQAA27pYokvp5oY',
+      transgresor: 'https://t.me/$oOx9u_oqMFGYBQAAdstE4pTrVd8',
+      vip: 'https://t.me/$_2t5ivoqMFGZBQAA_UEXp_URORI',
+    };
 
-    function sendSelection(pack, metodo) {
-      const payload = JSON.stringify({ pack, metodo });
-
-      if (tg) {
-        tg.sendData(payload);
-        window.setTimeout(() => tg.close(), 250);
+    function showNotice(message) {
+      if (tg && typeof tg.showPopup === 'function') {
+        tg.showPopup({ title: 'Comprar créditos', message, buttons: [{ type: 'ok' }] });
         return;
       }
 
       demoNotice.style.display = 'block';
-      demoNotice.textContent = `Simulación local: ${payload}`;
-      console.log('Telegram.WebApp.sendData ->', payload);
+      demoNotice.textContent = message;
+    }
+
+    function sendSelection(pack, metodo) {
+      if (metodo === 'estrellas') {
+        const invoiceUrl = STAR_INVOICE_URLS[pack] || STAR_INVOICE_URLS.inicial;
+
+        if (tg && typeof tg.openInvoice === 'function') {
+          tg.openInvoice(invoiceUrl, (status) => {
+            if (status === 'paid') {
+              showNotice('Pago confirmado. El bot acreditará tus créditos en unos segundos.');
+            } else if (status === 'pending') {
+              showNotice('El pago quedó pendiente. Telegram seguirá procesándolo.');
+            } else if (status === 'failed') {
+              showNotice('No se pudo completar el pago. Vuelve a intentarlo.');
+            }
+          });
+          return;
+        }
+
+        showNotice(`Simulación local: abriría la invoice ${invoiceUrl}`);
+        console.log('Telegram.WebApp.openInvoice ->', invoiceUrl);
+        return;
+      }
+
+      showNotice('Los pagos con cripto no están soportados dentro de Telegram para bienes digitales. Usa Telegram Stars para un checkout nativo.');
+      console.log('Telegram WebApp crypto checkout not available for digital goods.');
     }
 
     document.querySelectorAll('[data-pack][data-metodo]').forEach((button) => {
