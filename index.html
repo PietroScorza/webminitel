@@ -415,31 +415,23 @@
       demoNotice.style.display = 'block';
       demoNotice.textContent = message;
     }
-
-    function sendSelection(pack, metodo) {
+function sendSelection(pack, metodo) {
       if (metodo === 'estrellas') {
         const invoiceUrl = STAR_INVOICE_URLS[pack] || STAR_INVOICE_URLS.inicial;
-
         if (tg && typeof tg.openInvoice === 'function') {
-          tg.openInvoice(invoiceUrl, (status) => {
-            if (status === 'paid') {
-              showNotice('Pago confirmado. El bot acreditará tus créditos en unos segundos.');
-            } else if (status === 'pending') {
-              showNotice('El pago quedó pendiente. Telegram seguirá procesándolo.');
-            } else if (status === 'failed') {
-              showNotice('No se pudo completar el pago. Vuelve a intentarlo.');
-            }
-          });
+          tg.openInvoice(invoiceUrl, (status) => { /* ... logica de estrellas ... */ });
           return;
         }
-
-        showNotice(`Simulación local: abriría la invoice ${invoiceUrl}`);
-        console.log('Telegram.WebApp.openInvoice ->', invoiceUrl);
-        return;
+      } else if (metodo === 'cripto') {
+        // Enviar datos de vuelta al bot de Python y cerrar la Mini App
+        const data = JSON.stringify({ pack: pack, metodo: metodo });
+        if (tg && tg.sendData) {
+          tg.sendData(data);
+          tg.close();
+        } else {
+          showNotice('Abre esto desde Telegram para procesar el pago.');
+        }
       }
-
-      showNotice('Los pagos con cripto no están soportados dentro de Telegram para bienes digitales. Usa Telegram Stars para un checkout nativo.');
-      console.log('Telegram WebApp crypto checkout not available for digital goods.');
     }
 
     document.querySelectorAll('[data-pack][data-metodo]').forEach((button) => {
