@@ -427,20 +427,14 @@ function sendSelection(pack, metodo) {
         const botUsername = 'muhootestgirl_bot';
 
         const deepLink =
-            `https://t.me/${botUsername}?start=crypto_${pack}`;
+        `https://t.me/${botUsername}?start=crypto_${pack}`;
+
+        alert(deepLink);
 
         if (tg) {
-            tg.close();
-
-            setTimeout(() => {
-            window.location.href = deepLink;
-            }, 300);
-
-        } else {
-            window.location.href = deepLink;
+            tg.openTelegramLink(deepLink);
+            return;
         }
-
-        return;
         }
     }
 
