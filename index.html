@@ -429,13 +429,11 @@ function sendSelection(pack, metodo) {
         const deepLink =
         `https://t.me/${botUsername}?start=crypto_${pack}`;
 
-        alert(deepLink);
-
         if (tg) {
             tg.openTelegramLink(deepLink);
             return;
         }
-        }
+      }
     }
 
     document.querySelectorAll('[data-pack][data-metodo]').forEach((button) => {
